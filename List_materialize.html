@@ -12,6 +12,7 @@
 		<!-- Link to my CSS sheet -->
 		<link href="style-List.css" rel="stylesheet">
 		
+		
 		<title>List</title>
 	</head>
 	<body>
@@ -37,42 +38,31 @@
 		
 		<!-- Grid -->
 		<div class="row" id="listsGrid">
-			<div class="col l4 m6 s12" id="heckyes">
-				<div class="card-panel" id="heckno">
-					<ul class="collection with-header" id="list1">
-						<li class="collection-header">
-							<div class="row">
-								<div class="col s11">
-									<h4>My List</h4>
-								</div>
-								<div class="col s1">
-									<a class="btn-floating red" onclick="RemoveList(list1, listsGrid)"><i class="material-icons">delete</i></a>
-								</div>
-							</div>
-						</li>					
-						<li class="collection-item" id="list1_element1">
-							<div ondrop="Drop(event, list1_element1, list1)" ondragover="AllowDrop(event)">
-								<i class="material-icons" draggable="true" ondragstart="Drag(list1_element1)">reorder</i>
-								<input type="checkbox" class="filled-in" id="list1_check1" value="Toy" />
-								<label for="list1_check1">Toy</label>
-								<a href="#!" class="secondary-content" onclick="EraseElement(list1_element1, list1)"><i class="material-icons">delete</i></a>
-							</div>
+			<div class="col l4 m6 s12">
+				<div class="card-panel">
+					<div class="row">
+						<div class="col s11">
+							<h4>My List</h4>
+						</div>
+						<div class="col s1">
+							<a class="btn-floating red" onclick="RemoveList(list1, listsGrid)"><i class="material-icons">delete</i></a>
+						</div>
+					</div>
+					<ul class="collection ui-sortable sortable" id="list1">
+						<li class="collection-item ui-sortable-handle" id="list1_element1">
+							<input type="checkbox" class="filled-in" id="list1_check1" value="Toy" />
+							<label for="list1_check1">Toy</label>
+							<a href="#!" class="secondary-content" onclick="EraseElement(list1_element1, list1)"><i class="material-icons">delete</i></a>
 						</li>
-						<li class="collection-item" id="list1_element2">
-							<div ondrop="Drop(event, list1_element2, list1)" ondragover="AllowDrop(event)">
-								<i class="material-icons" draggable="true" ondragstart="Drag(list1_element2)">reorder</i>
-								<input type="checkbox" class="filled-in" id="list1_check2" value="Game" />
-								<label for="list1_check2">Game</label>
-								<a href="#!" class="secondary-content" onclick="EraseElement(list1_element2, list1)"><i class="material-icons">delete</i></a>
-							</div>
+						<li class="collection-item ui-sortable-handle" id="list1_element2">
+							<input type="checkbox" class="filled-in" id="list1_check2" value="Game" />
+							<label for="list1_check2">Game</label>
+							<a href="#!" class="secondary-content" onclick="EraseElement(list1_element2, list1)"><i class="material-icons">delete</i></a>
 						</li>
-						<li class="collection-item" id="list1_element3">
-							<div ondrop="Drop(event, list1_element3, list1)" ondragover="AllowDrop(event)">
-								<i class="material-icons" draggable="true" ondragstart="Drag(list1_element3)">reorder</i>
-								<input type="checkbox" class="filled-in" id="list1_check3" value="Plushie" />
-								<label for="list1_check3">Plushie</label>
-								<a href="#!" class="secondary-content" onclick="EraseElement(list1_element3, list1)"><i class="material-icons">delete</i></a>
-							</div>
+						<li class="collection-item ui-sortable-handle" id="list1_element3">
+							<input type="checkbox" class="filled-in" id="list1_check3" value="Plushie" />
+							<label for="list1_check3">Plushie</label>
+							<a href="#!" class="secondary-content" onclick="EraseElement(list1_element3, list1)"><i class="material-icons">delete</i></a>
 						</li>
 					</ul>
 					<!-- Add area -->
@@ -95,10 +85,21 @@
 		<noscript>... no JS... ...wut?</noscript>
 		
 		<!--Import jQuery before materialize.js-->
-		<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+		<script type="text/javascript" src="jquery-3.1.1.min.js"></script>
 		<script type="text/javascript" src="materialize/js/materialize.min.js"></script>
 		
 		<!-- Javascript -->
-		<script src="List_functions_materialize.js"></script>
+		<script type="text/javascript" src="List_functions_materialize.js"></script>
+		
+		<!-- jQuery -->
+		<script type="text/javascript" src="jquery-3.1.1.js"></script>
+		<script type="text/javascript" src="jquery-ui-1.12.1.custom/jquery-ui.js"></script>
+		<script type="text/javascript" src="jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+		<script>
+			$( ".sortable" ).sortable( {
+				stop : function(event, ui){
+					ReorganiseList(document.getElementById($(".sortable").attr("id"))); }
+			} );
+		</script>
 	</body>
 </html>

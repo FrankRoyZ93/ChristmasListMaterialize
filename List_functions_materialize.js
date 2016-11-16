@@ -1,17 +1,12 @@
-// origin position of a drag
-var dragOrigin;
-// element dragged that needs tranfer
-var toTransfer;
-
 	// ************************ //
 	// **** Grid functions **** //
 	// ************************ //
-	
+
 function CreateList(_name, _grid, _textInput)
 {
 	if (_name == "")
 	{
-		window.alert("Oops! Write something first!");				
+		window.alert("Oops! Write something first!");
 	}
 	else if (_grid == null || _grid == undefined)
 	{
@@ -23,23 +18,21 @@ function CreateList(_name, _grid, _textInput)
 		_textInput.value = "";
 		
 		// number of lists in the grid
-		var nbOfElements = _grid.getElementsByTagName("ul").length;	
+		var nbOfElements = _grid.getElementsByTagName("ul").length;
 		
 		// add list in the grid
 		_grid.innerHTML +=
 		'<div class="col l4 m6 s12">' +
 		'	<div class="card-panel">' +
-		'		<ul class="collection with-header" id="list' + (nbOfElements + 1) + '">' +
-		'			<li class="collection-header">' + 
-		'				<div class="row">' +
-		'					<div class="col s11">' +
-		'						<h4>' + _name + '</h4>' + 
-		'					</div>' +
-		'					<div class="col s1">' +
-		'						<a class="btn-floating red" onclick="RemoveList(list' + (nbOfElements + 1) + ', ' + _grid.id + ')"><i class="material-icons">delete</i></a>' +
-		'					</div>' +
-		'				</div>' +
-		'			</li>' +
+		'		<div class="row">' +
+		'			<div class="col s11">' +
+		'				<h4>' + _name + '</h4>' + 
+		'			</div>' +
+		'			<div class="col s1">' +
+		'				<a class="btn-floating red" onclick="RemoveList(list' + (nbOfElements + 1) + ', ' + _grid.id + ')"><i class="material-icons">delete</i></a>' +
+		'			</div>' +
+		'		</div>' +
+		'		<ul class="collection ui-sortable sortable" id="list' + (nbOfElements + 1) + '">' +
 		'		</ul>' +
 		'		<!-- Add area -->' +
 		'		<div class="row">' +
@@ -52,6 +45,11 @@ function CreateList(_name, _grid, _textInput)
 		'		</div>' +
 		'	</div>' +
 		'</div>';
+		
+		$( ".sortable" ).sortable( {
+			stop : function(event, ui){
+				ReorganiseList(document.getElementById($(".sortable").attr("id"))); }
+		} );
 	}
 }
 
@@ -100,18 +98,15 @@ function AddElement(_toAdd, _list, _textInput)
 		// reset the "Add" text 
 		_textInput.value = "";
 
-		// number of elements in the list (-1 for the header)
-		var nbOfElements = _list.getElementsByTagName("li").length - 1;	
+		// number of elements in the list
+		var nbOfElements = _list.getElementsByTagName("li").length;	
 		
 		// add element in the list
 		_list.innerHTML += 
-		'<li class="collection-item" id="' + _list.id + '_element' + (nbOfElements + 1) + '" >' +
-		'	<div ondrop="Drop(event, ' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')" ondragover="AllowDrop(event)">' +
-		'		<i class="material-icons" draggable="true" ondragstart="Drag(' + _list.id + '_element' + (nbOfElements + 1) + ')">reorder</i>' +
-		'		<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
-		'		<label for="' + _list.id + '_check' + (nbOfElements + 1) +'">' + _toAdd + '</label> ' +
-		'		<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
-		'	</div>' +
+		'<li class="collection-item ui-sortable-handle" id="' + _list.id + '_element' + (nbOfElements + 1) + '" >' +
+		'	<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (nbOfElements + 1) + '" value="' + _toAdd + '">' +
+		'	<label for="' + _list.id + '_check' + (nbOfElements + 1) +'">' + _toAdd + '</label> ' +
+		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
 		'</li>';
 	}
 }
@@ -135,7 +130,7 @@ function EraseElement(_toErase, _list)
 		{
 			if(elements[i] == _toErase)
 			{
-				elements[i].parentNode.removeChild(elements[i]);
+				_list.removeChild(elements[i]);
 				ReorganiseList(_list);
 				break;
 			}
@@ -150,41 +145,13 @@ function ReorganiseList(_list)
 	// Convert elementsNodeList to an array
 	var elements = [];
 	for(var i = elementsNodeList.length; i--; elements.unshift(elementsNodeList[i]));
-	// Remove the first element (the header)
-	elements.shift();
 	
 	for (i = 0; i < elements.length; i++)
 	{
 		elements[i].id = _list.id + "_element" + (i + 1);
-		elements[i].innerHTML =		
-		'	<div ondrop="Drop(event, ' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')" ondragover="AllowDrop(event)">' +
-		'		<i class="material-icons" draggable="true" ondragstart="Drag(' + _list.id + '_element' + (i + 1) + ')">reorder</i>' +
-		'		<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '">' +
-		'		<label for="' + _list.id + '_check' + (i + 1) +'">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
-		'		<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ')"><i class="material-icons">delete</i></a>' +
-		'	</div>';
+		elements[i].innerHTML =	
+		'	<input type="checkbox" class="filled-in" id="' + _list.id + '_check' + (i + 1) + '" value="' + elements[i].getElementsByTagName("input")[0].value + '">' +
+		'	<label for="' + _list.id + '_check' + (i + 1) +'">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
+		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>';
 	}
-}
-
-function AllowDrop(_ev) 
-{
-    _ev.preventDefault();
-}
-
-function Drag(_element) 
-{
-	dragOrigin = _element;
-	toTransfer = _element.innerHTML;
-}
-
-function Drop(_ev, _element, _list) 
-{
-    _ev.preventDefault();
-	
-	var destChildren = _element.innerHTML;
-	
-	_element.innerHTML = toTransfer;
-	dragOrigin.innerHTML = destChildren;
-	
-	ReorganiseList(_list);
 }
