@@ -29,7 +29,7 @@ function CreateList(_name, _grid, _textInput)
 		'				<h4>' + _name + '</h4>' + 
 		'			</div>' +
 		'			<div class="col s1">' +
-		'				<a class="btn-floating red" onclick="RemoveList(list' + (nbOfElements + 1) + ', ' + _grid.id + ')"><i class="material-icons">delete</i></a>' +
+		'				<a class="btn-floating red"><i class="material-icons" onclick="RemoveList(list' + (nbOfElements + 1) + ', ' + _grid.id + ')">delete</i></a>' +
 		'			</div>' +
 		'		</div>' +
 		'		<ul class="collection ui-sortable sortable" id="list' + (nbOfElements + 1) + '">' +
@@ -76,7 +76,45 @@ function RemoveList(_list, _grid)
 				break;
 			}
 		}
+		
+		ReorganiseGrid(_grid);
 	}	
+}
+
+function ReorganiseGrid(_grid)
+{
+	if (_grid == null || _grid == undefined)
+	{
+		window.alert("hum... the grid doesn't exist...");
+	}
+	else
+	{
+		var gridChildrenNodes = _grid.childNodes;
+		
+		// Convert listsNodeList to an array
+		var childrenNodes = [];
+		for(var i = gridChildrenNodes.length; i--; childrenNodes.unshift(gridChildrenNodes[i]));
+		
+		var lists = [];
+		
+		for (i = 0; i < childrenNodes.length; i++)
+		{
+			if (childrenNodes[i].tagName == "DIV")
+			{
+				lists.push(childrenNodes[i]);
+			}
+		}
+		
+		for (i = 0; i < lists.length; i++)
+		{
+			lists[i].getElementsByTagName("a")[0].innerHTML = '<i class="material-icons" onclick="RemoveList(list' + (i + 1) + ', ' + _grid.id + ')">delete</i>';			
+			lists[i].getElementsByTagName("ul")[0].id = 'list' + (i + 1);			
+			lists[i].getElementsByTagName("input")[lists[i].getElementsByTagName("input").length - 1].id = 'list' + (i + 1) + '_addText';			
+			lists[i].getElementsByTagName("a")[lists[i].getElementsByTagName("a").length - 1].innerHTML = 
+				'<i class="material-icons" onclick="AddElement(list' + (i + 1) + '_addText.value, list' + (i + 1) + ', list' + (i + 1) + '_addText)">add</i>';			
+			ReorganiseList(lists[i].getElementsByTagName("ul")[0]);
+		}
+	}
 }
 
 	// ************************ //
