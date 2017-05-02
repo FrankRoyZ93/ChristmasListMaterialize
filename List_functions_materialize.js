@@ -1,8 +1,62 @@
+var hasLoaded = false;
+
+	// ***************************** //
+	// **** Load/Save functions **** //
+	// ***************************** //
+	
+function LoadList(_content)
+{
+	//window.alert("how");
+	
+	hasLoaded = false;
+
+	var listContent = _content.split("\t");
+	
+	var grid = document.getElementById("addNewListText");
+	var list = CreateList(listContent[0], listsGrid);
+	
+	for (j = 1; j < listContent.length; j++)
+	{
+		AddElement(listContent[j], list, document.getElementById(list.id + "_addText"));
+	}
+	
+	hasLoaded = true;
+}
+	
+function SaveGrid()
+{	
+	if(hasLoaded == true)
+	{
+		var stringSaved = "";
+		
+		var listsNames = document.getElementById("listsGrid").getElementsByTagName("h4");
+		var lists = document.getElementById("listsGrid").getElementsByTagName("ul");
+		for(i = 0; i < lists.length; i++)
+		{
+			stringSaved += listsNames[i].innerHTML + "\t";
+			
+			var elements = lists[i].getElementsByTagName("li");
+			for(j = 0; j < elements.length; j++)
+			{
+				stringSaved += elements[j].getElementsByTagName("label")[0].innerHTML + "\t";
+			}
+			
+			stringSaved += "\n";
+		}
+		
+		//window.alert("why");
+		
+		var xhr = new XMLHttpRequest();
+		xhr.open( 'POST', 'index.php?q=' + stringSaved, true );
+		xhr.send();
+	}
+}
+	
 	// ************************ //
 	// **** Grid functions **** //
 	// ************************ //
 
-function CreateList(_name, _grid, _textInput)
+function CreateList(_name, _grid)
 {
 	if (_name == "")
 	{
@@ -15,7 +69,7 @@ function CreateList(_name, _grid, _textInput)
 	else
 	{
 		// reset the "Add" text 
-		_textInput.value = "";
+		document.getElementById("addNewListText").value = "";
 		
 		// number of lists in the grid
 		var nbOfElements = _grid.getElementsByTagName("ul").length;
@@ -50,35 +104,11 @@ function CreateList(_name, _grid, _textInput)
 			stop : function(event, ui){
 				ReorganiseList(document.getElementById($(".sortable").attr("id"))); }
 		} );
-	}
-}
-
-function RemoveList(_list, _grid)
-{
-	if (_grid == null || _grid == undefined)
-	{
-		window.alert("Alert! This list doesn't exist anymore!");		
-	}
-	else if (_grid == null || _grid == undefined)
-	{
-		window.alert("hum... the grid doesn't exist...");
-	}
-	else
-	{		
-		var lists = _grid.getElementsByTagName("ul");
 		
-		// We will now check in the grid where '_list' is located		
-		for (i = 0; i < lists.length; i++)
-		{
-			if(lists[i] == _list)
-			{
-				lists[i].parentNode.parentNode.parentNode.removeChild(lists[i].parentNode.parentNode);
-				break;
-			}
-		}
+		SaveGrid();
 		
-		ReorganiseGrid(_grid);
-	}	
+		return document.getElementById("list" + (nbOfElements + 1));
+	}
 }
 
 function ReorganiseGrid(_grid)
@@ -114,6 +144,8 @@ function ReorganiseGrid(_grid)
 				'<i class="material-icons" onclick="AddElement(list' + (i + 1) + '_addText.value, list' + (i + 1) + ', list' + (i + 1) + '_addText)">add</i>';			
 			ReorganiseList(lists[i].getElementsByTagName("ul")[0]);
 		}
+		
+		SaveGrid();
 	}
 }
 
@@ -146,6 +178,8 @@ function AddElement(_toAdd, _list, _textInput)
 		'	<label for="' + _list.id + '_check' + (nbOfElements + 1) +'">' + _toAdd + '</label> ' +
 		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (nbOfElements + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>' +
 		'</li>';
+		
+		SaveGrid();
 	}
 }
 
@@ -173,6 +207,8 @@ function EraseElement(_toErase, _list)
 				break;
 			}
 		}
+		
+		SaveGrid();
 	}
 }
 
@@ -192,4 +228,34 @@ function ReorganiseList(_list)
 		'	<label for="' + _list.id + '_check' + (i + 1) +'">' + elements[i].getElementsByTagName("input")[0].value + '</label> ' +
 		'	<a href="#!" class="secondary-content" onclick="EraseElement(' + _list.id + '_element' + (i + 1) + ', ' + _list.id + ')"><i class="material-icons">delete</i></a>';
 	}
+		
+	SaveGrid();
+}
+
+function RemoveList(_list, _grid)
+{
+	if (_grid == null || _grid == undefined)
+	{
+		window.alert("Alert! This list doesn't exist anymore!");		
+	}
+	else if (_grid == null || _grid == undefined)
+	{
+		window.alert("hum... the grid doesn't exist...");
+	}
+	else
+	{		
+		var lists = _grid.getElementsByTagName("ul");
+		
+		// We will now check in the grid where '_list' is located		
+		for (i = 0; i < lists.length; i++)
+		{
+			if(lists[i] == _list)
+			{
+				lists[i].parentNode.parentNode.parentNode.removeChild(lists[i].parentNode.parentNode);
+				break;
+			}
+		}
+		
+		ReorganiseGrid(_grid);
+	}	
 }

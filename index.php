@@ -62,12 +62,24 @@
 					ReorganiseList(document.getElementById($(".sortable").attr("id"))); }
 			} );
 		</script>
-				
+		
 		<?php
-		$myfile = fopen("save.txt", "r+") or die("Unable to open file!");
-		$filecontent = fread($myfile,filesize("save.txt"));
-		echo '<script type="text/javascript">LoadGrid('$filecontent');</script>';
+		$myfile = fopen("save.txt", "r");	
+		while (($line = fgets($myfile)) != false) 
+		{
+			$line = str_replace(array("\r", "\n"), '', $line);
+			echo '<script type="text/javascript">LoadList("'.$line.'");</script>';
+		}
 		fclose($myfile);
+				
+		if(!empty($_POST['q']))
+		{
+			$data = $_POST['q'];
+
+			$file = fopen("save.txt", 'w');
+			fwrite($file, $data);
+			fclose($file);
+		}
 		?>
 	</body>
 </html>
